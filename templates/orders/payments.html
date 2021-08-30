@@ -68,8 +68,8 @@
                                     </td>
                                     <td>
                                         <div class="price-wrap">
-                                            <var class="price">$ {{ cart_item.sub_total }}</var>
-                                            <small class="text-muted"> $ {{ cart_item.product.price }} each </small>
+                                            <var class="price">{{ cart_item.sub_total }}₫</var>
+                                            <small class="text-muted"> {{ cart_item.product.price }}₫ each </small>
                                         </div> <!-- price-wrap .// -->
                                     </td>
                                 </tr>
@@ -85,16 +85,16 @@
 					<div class="card-body">
 						<dl class="dlist-align">
 							<dt>Total price:</dt>
-							<dd class="text-right">${{ total }}</dd>
+							<dd class="text-right">{{ total }}₫</dd>
 						</dl>
 						<dl class="dlist-align">
 							<dt>Tax:</dt>
-							<dd class="text-right">${{ tax }}</dd>
+							<dd class="text-right">{{ tax }}₫</dd>
 						</dl>
 						<dl class="dlist-align">
 							<dt>Total:</dt>
 							<dd class="text-right text-dark b">
-								<strong>${{ grand_total }}</strong>
+								<strong>{{ grand_total }}₫</strong>
 							</dd>
 						</dl>
 						<hr />
@@ -103,6 +103,15 @@
 						</p>
 						<div id="paypal-button-container">
 
+						</div>
+						<div class="fake-payments">
+							<div class="fake-payments-inner" id="fake-payments">
+								Thanh toán bằng thận <img src="{% static 'images/misc/kidneys.png' %}" alt="">
+							</div>
+							<div class="fake-payments-inner ship-code" id="ship-code">
+								Thanh toán khi nhận hàng
+							</div>
+							<p class="decripstion-fpayment"><i>Được hỗ trợ bởi</i> <span>Lalisa Shop</span></p>
 						</div>
 						<a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
 					</div>
@@ -187,5 +196,79 @@
 			});
 		}
 	}).render('#paypal-button-container');
+
+	const fake_payments = document.getElementById('fake-payments');
+
+	fake_payments.addEventListener('click', event => {
+
+		var amount = parseFloat("{{ grand_total }}");
+		var url = "{% url 'payments' %}";
+		var csrfToken = getCookie('csrftoken');
+		var orderID = "{{ order.order_number }}";
+		var paymentMethod = 'Thận';
+		var redirectUrl = "{% url 'order_complete' %}"
+
+		// alert('Cảm ơn {{ order.last_name }} , bạn đã thanh toán 1 quả thận thành công!');
+		// alert(redirectUrl + '?order_number={{ order.order_number }}' + '&payment_id=1')
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {
+				'csrfmiddlewaretoken': "{{ csrf_token }}",
+				'orderID': orderID,
+				'transID': 'fake_payment',
+				'payment_method': paymentMethod,
+				'status': 'Thành công',
+			},
+			success: function(response) {
+				data = response.data;
+				// alert('Transaction completed by ' + details.payer.name.given_name + '!');
+				// window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
+				alert('Cảm ơn {{ order.last_name }} , bạn đã thanh toán 1 quả thận thành công!');
+				window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
+			},
+			error: function(response) {
+				error = response.error;
+				alert('Thanh toán thành công nhưng đã xảy ra 1 lỗi: ' + e);
+			}
+		});
+	});
+
+	const ship_code = document.getElementById('ship-code');
+
+	ship_code.addEventListener('click', event => {
+
+		var amount = parseFloat("{{ grand_total }}");
+		var url = "{% url 'payments' %}";
+		var csrfToken = getCookie('csrftoken');
+		var orderID = "{{ order.order_number }}";
+		var paymentMethod = 'Thận';
+		var redirectUrl = "{% url 'order_complete' %}"
+
+		// alert('Cảm ơn {{ order.last_name }} , bạn đã thanh toán 1 quả thận thành công!');
+		// alert(redirectUrl + '?order_number={{ order.order_number }}' + '&payment_id=1')
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: {
+				'csrfmiddlewaretoken': "{{ csrf_token }}",
+				'orderID': orderID,
+				'transID': 'Ship Code',
+				'payment_method': "Ship code",
+				'status': 'Đang giao hàng',
+			},
+			success: function(response) {
+				data = response.data;
+				// alert('Transaction completed by ' + details.payer.name.given_name + '!');
+				// window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
+				alert('Cảm ơn {{ order.last_name }} đã đặt hàng tại Lalisa Store!');
+				window.location.href = redirectUrl + '?order_number=' + data["order_number"] + '&payment_id=' + data["transID"];
+			},
+			error: function(response) {
+				error = response.error;
+				alert('Thanh toán thành công nhưng đã xảy ra 1 lỗi: ' + e);
+			}
+		});
+	});
 </script>
 {% endblock %}

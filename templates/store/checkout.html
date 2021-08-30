@@ -44,16 +44,16 @@
                             </div>
                             <div class="form-row">
                                 <div class="col form-group">
-                                    <label for="">City</label>
+                                    <label for="">District</label>
                                     <input type="text" name="city" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
-                                    <label for="">State</label>
+                                    <label for="">City</label>
                                     <input type="text" name="state" class="form-control" required>
                                 </div>
                                 <div class="col form-group">
                                     <label for="">Country</label>
-                                    <input type="text" name="country" class="form-control" required>
+                                    <input type="text" name="country" class="form-control" value="Việt Nam" required>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -100,15 +100,15 @@
                                     </td>
                                     <td>
                                         <div class="price-wrap">
-                                            <var class="price">$ {{ cart_item.sub_total }}</var>
-                                            <small class="text-muted"> $ {{ cart_item.product.price }} each </small>
+                                            <var class="price">{{ cart_item.sub_total }}₫</var>
+                                            <small class="text-muted">{{ cart_item.product.price }}₫ each </small>
                                         </div> <!-- price-wrap .// -->
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
-                        <button type="submit" name="submit" class="btn btn-primary btn-block">Place Order</button>
+                        <button type="submit" name="submit" class="btn btn-danger btn-block">Place Order</button>
                         <a href="{% url 'store' %}" class="btn btn-light btn-block">Continue Shopping</a>
                         </form>
                     </div> <!-- card-body.// -->

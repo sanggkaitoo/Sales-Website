@@ -1,4 +1,5 @@
 from re import split
+
 from carts.models import Cart, CartItem
 from django.shortcuts import redirect, render
 from django.contrib import messages, auth
@@ -7,12 +8,14 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.core.mail import EmailMessage
+from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 
 from .forms import RegistrationForm
-from accounts.models import Account
+from .models import Account
 from carts.views import _cart_id
+
 
 import requests
 
@@ -34,15 +37,19 @@ def register(request):
             user.save()
 
             current_site = get_current_site(request=request)
-            mail_subject = 'Activate your blog account.'
+            mail_subject = 'Activate your shopping account'
             message = render_to_string('accounts/active_email.html', {
                 'user': user,
                 'domain': current_site.domain,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                 'token': default_token_generator.make_token(user)
             })
-            send_email = EmailMessage(mail_subject, message, to=[email])
+
+            send_email = EmailMultiAlternatives(mail_subject, "content", to=[email])
+
+            send_email.attach_alternative(message, "text/html")
             send_email.send()
+
             messages.success(
                 request=request,
                 message="Please confirm your email address to complete the registration"

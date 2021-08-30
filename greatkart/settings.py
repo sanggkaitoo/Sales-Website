@@ -1,18 +1,9 @@
 from pathlib import Path
 from django.contrib.messages import constants as messages
 
-import environ
-
-
-env = environ.Env(
-    DEBUG=(bool, False)
-)
-environ.Env.read_env()
-
-
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = '52$5ujr925j_8)+c4+yhwik_+vq6e13#fxi5**_$rv80pn3(sf'
 
 DEBUG = True
 
@@ -25,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'category',
     'store',
     'carts',
@@ -69,12 +61,8 @@ AUTH_USER_MODEL = 'accounts.Account'    # Tên model thay thế cho model user m
 
 DATABASES = {
     'default': {
-        'ENGINE': env("DATABASE_ENGINE"),
-        'NAME': env("DATABASE_NAME"),
-        'USER': env("DATABASE_USER"),
-        'PASSWORD': env("DATABASE_PASSWORD"),
-        'HOST': env("DATABASE_HOST"),
-        'PORT': env("DATABASE_PORT"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(BASE_DIR / "db.sqlite3"),
     }
 }
 
@@ -93,9 +81,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = env("LANGUAGE_CODE")
+LANGUAGE_CODE = 'vi'
 
-TIME_ZONE = env("TIME_ZONE")
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
@@ -122,8 +110,9 @@ MESSAGE_TAGS = {
 }
 
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'no.reply.lalisa@gmail.com'
+EMAIL_HOST_PASSWORD = 'lalisashop123'
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST = env("EMAIL_HOST")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_USE_SSL = False

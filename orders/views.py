@@ -5,18 +5,24 @@ from .forms import OrderForm
 import datetime
 from .models import Order, Payment, OrderProduct
 from store.models import Product
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.template.loader import render_to_string
 
+from datetime import date
 
-def sendEmail(request, order):
+def sendEmail(request, order, cartItem):
+    todays_date = date.today()
     mail_subject = 'Thank you for your order!'
     message = render_to_string('orders/order_recieved_email.html', {
         'user': request.user,
-        'order': order
+        'order': order,
+        'cartItem': cartItem,
+        'date': todays_date
     })
     to_email = request.user.email
-    send_email = EmailMessage(mail_subject, message, to=[to_email])
+
+    send_email = EmailMultiAlternatives(mail_subject, "content", to=[to_email])
+    send_email.attach_alternative(message, "text/html")
     send_email.send()
 
 
@@ -69,11 +75,11 @@ def payments(request):
                 product.stock -= item.quantity
                 product.save()
 
+            # Gửi thư cảm ơn
+            sendEmail(request=request, order=order, cartItem=cart_items)
+
             # Xóa hết cart_item
             CartItem.objects.filter(user=request.user).delete()
-
-            # Gửi thư cảm ơn
-            sendEmail(request=request, order=order)
 
             # Phản hồi lại ajax
             data = {
